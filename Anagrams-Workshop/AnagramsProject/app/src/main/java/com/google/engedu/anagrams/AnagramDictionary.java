@@ -19,6 +19,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -28,12 +31,32 @@ public class AnagramDictionary {
     private static final int DEFAULT_WORD_LENGTH = 3;
     private static final int MAX_WORD_LENGTH = 7;
     private Random random = new Random();
+    private ArrayList<String> wordList = new ArrayList<>();
+    // Will allow us to rapidly (in O(1)) verify whether a word is valid
+    private HashSet<String> wordSet = new HashSet();
+    // Will allow to group anagrams together.
+    private HashMap<String,ArrayList<String>> lettersToWord = new HashMap<>();
 
     public AnagramDictionary(Reader reader) throws IOException {
         BufferedReader in = new BufferedReader(reader);
+        //ArrayList<String> wordList = new ArrayList<>();
         String line;
+
         while((line = in.readLine()) != null) {
             String word = line.trim();
+            String key = sortLetters(word);
+            // wordList.add(word); This straight forward method would be too slow.
+            if (lettersToWord.containsKey(key)) {
+                // If key already exists, word is added to ArrayList at that key.
+                lettersToWord.get(key).add(word);
+            }
+            else {
+                // Otherwise, new ArrayList is created and put where corresponding key.
+                lettersToWord.put(key, new ArrayList<String>());
+                // Word is added at the ArrayList of such key.
+                lettersToWord.get(key).add(word);
+            }
+
         }
     }
 
@@ -42,8 +65,37 @@ public class AnagramDictionary {
     }
 
     public List<String> getAnagrams(String targetWord) {
-        ArrayList<String> result = new ArrayList<String>();
-        return result;
+
+        // Array list for storing the anagrams for the target word
+        ArrayList<String> targetWordAnagrams= new ArrayList<>();
+
+        // We iterate through word list for finding matching anagrams.
+        /*for (int i = 0; i < wordList.size(); i++) {
+            String anagramCandidate = wordList.get(i); // retrieving the value once from wordList is faster
+            if (targetWord.length() == anagramCandidate.length()) { // for the sake of speed, we first check the length
+                //anagramCandidate = sortLetters(anagramCandidate); // Ultimately, ...
+                //targetWord = sortLetters(targetWord);
+                if (sortLetters(anagramCandidate).equals(sortLetters(targetWord))) { // ... we compare the sorted version of the words.
+                    targetWordAnagrams.add(anagramCandidate); // We append the matching anagram to the corresponding array list.
+                }
+            }
+        }*/
+
+        // This approach will be faster
+        String key = sortLetters(targetWord);
+        if (lettersToWord.containsKey(key)) {
+            targetWordAnagrams = lettersToWord.get(key);
+        }
+        return targetWordAnagrams;
+    }
+    public String sortLetters(String word) {
+        // Good reference
+        // https://stackoverflow.com/questions/6266572/creating-new-string-with-sorted-letters-from-a-string-word-in-java
+        char[] chars = word.toCharArray();
+        Arrays.sort(chars);
+        String sortedWord = new String(chars);
+
+        return sortedWord;
     }
 
     public List<String> getAnagramsWithOneMoreLetter(String word) {
@@ -52,6 +104,6 @@ public class AnagramDictionary {
     }
 
     public String pickGoodStarterWord() {
-        return "stop";
+        return "skate";
     }
 }

@@ -44,9 +44,9 @@ public class AnagramDictionary {
 
         while((line = in.readLine()) != null) {
             String word = line.trim();
+            wordList.add(word); // I'm not sure if this would work out just by using wordSet and not wordList...
             wordSet.add(word);
             String key = sortLetters(word);
-            // wordList.add(word); This straight forward method would be too slow.
             if (lettersToWord.containsKey(key)) {
                 // If key already exists, word is added to ArrayList at that key.
                 lettersToWord.get(key).add(word);
@@ -129,6 +129,15 @@ public class AnagramDictionary {
     }
 
     public String pickGoodStarterWord() {
-        return "post";
+
+        int startingPoint = random.nextInt(wordList.size());
+
+        for (int i = startingPoint; i < wordList.size(); i++) {
+            String potentialWord = wordList.get(i);
+            if (getAnagramsWithOneMoreLetter(potentialWord).size() >= MIN_NUM_ANAGRAMS) {
+                return potentialWord;
+            }
+        }
+        return "post"; // This is the default, which is unlikely...
     }
 }

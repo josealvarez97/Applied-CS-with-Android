@@ -44,6 +44,7 @@ public class AnagramDictionary {
 
         while((line = in.readLine()) != null) {
             String word = line.trim();
+            wordSet.add(word);
             String key = sortLetters(word);
             // wordList.add(word); This straight forward method would be too slow.
             if (lettersToWord.containsKey(key)) {
@@ -61,7 +62,17 @@ public class AnagramDictionary {
     }
 
     public boolean isGoodWord(String word, String base) {
-        return true;
+        // Checks whether the provided word is a valid dictionary word
+        // Checks whether the word does not contain the base word as a substring
+        if (!word.contains(base)) {
+            //boolean valid = wordSet.contains(word);
+            if (wordSet.contains(word)) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 
     public List<String> getAnagrams(String targetWord) {
@@ -99,11 +110,25 @@ public class AnagramDictionary {
     }
 
     public List<String> getAnagramsWithOneMoreLetter(String word) {
-        ArrayList<String> result = new ArrayList<String>();
-        return result;
+        ArrayList<String> anagramsWithOneMoreLetter = new ArrayList<String>();
+        char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray(); //https://stackoverflow.com/questions/17575840/better-way-to-generate-array-of-all-letters-in-the-alphabet
+
+        // Good discussion on the performance of a for each loop and a normal for
+        // https://stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work
+
+        for (char letter : alphabet) {
+            String wordPlusLetter = word + letter;
+            String wordPlusLetter_Key = sortLetters(wordPlusLetter);
+            if (lettersToWord.containsKey(wordPlusLetter_Key)) {
+                anagramsWithOneMoreLetter.addAll(lettersToWord.get(wordPlusLetter_Key));
+            } // else that was not a valid arrange of letters to form anagrams from.
+        }
+
+        
+        return anagramsWithOneMoreLetter;
     }
 
     public String pickGoodStarterWord() {
-        return "skate";
+        return "post";
     }
 }

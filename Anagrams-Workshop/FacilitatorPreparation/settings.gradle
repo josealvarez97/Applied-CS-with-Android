@@ -1,1 +1,1 @@
-include ':app', ':anagrampreparation'
+include ':app', ':anagrampreparation', ':experiments'

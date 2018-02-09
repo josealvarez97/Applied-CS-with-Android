@@ -30,12 +30,17 @@ public class AnagramDictionary {
     private static final int MIN_NUM_ANAGRAMS = 5;
     private static final int DEFAULT_WORD_LENGTH = 3;
     private static final int MAX_WORD_LENGTH = 7;
+    private int wordLength = DEFAULT_WORD_LENGTH; // For restricting the length of starter words...
     private Random random = new Random();
+    // WORD LIST - Just a list with all words in the file
     private ArrayList<String> wordList = new ArrayList<>();
-    // Will allow us to rapidly (in O(1)) verify whether a word is valid
+    // WORD SET - Will allow us to rapidly (in O(1)) verify whether a word is valid
     private HashSet<String> wordSet = new HashSet();
-    // Will allow to group anagrams together.
+    // LETTERS TO WORD - Will allow to group anagrams together.
     private HashMap<String,ArrayList<String>> lettersToWord = new HashMap<>();
+    // SIZE TO WORDS - Will allow to map words to their lengths.
+    private HashMap<Integer, ArrayList<String>> sizeToWords = new HashMap<>();
+
 
     public AnagramDictionary(Reader reader) throws IOException {
         BufferedReader in = new BufferedReader(reader);
@@ -56,6 +61,13 @@ public class AnagramDictionary {
                 lettersToWord.put(key, new ArrayList<String>());
                 // Word is added at the ArrayList of such key.
                 lettersToWord.get(key).add(word);
+            }
+
+            if (sizeToWords.containsKey(word.length())) {
+                sizeToWords.get(word.length()).add(word);
+            } else {
+                sizeToWords.put(word.length(), new ArrayList<String>());
+                sizeToWords.get(word.length()).add(word);
             }
 
         }
@@ -134,7 +146,14 @@ public class AnagramDictionary {
 
         for (int i = startingPoint; i < wordList.size(); i++) {
             String potentialWord = wordList.get(i);
+
+            if (potentialWord.length() != wordLength) { // We will only use words of the right length.
+                continue;
+            }
             if (getAnagramsWithOneMoreLetter(potentialWord).size() >= MIN_NUM_ANAGRAMS) {
+                if (wordLength < MAX_WORD_LENGTH) {
+                    wordLength++; // We will increase the length each time to increase difficulty until reaching MAX LENGTH
+                }
                 return potentialWord;
             }
         }

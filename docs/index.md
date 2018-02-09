@@ -1,1 +1,1 @@
-![Android Workshops Poster](/docs/AndroidWorkshop-ASCENT.jpg)
+![Android Workshops Poster](/images/AndroidWorkshop-ASCENT.jpg)
